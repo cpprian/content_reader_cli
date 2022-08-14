@@ -22,8 +22,10 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
+	"log"
+	"net/http"
 
+	"github.com/cpprian/content_reader_cli/pkg/content_parser"
 	"github.com/spf13/cobra"
 )
 
@@ -36,7 +38,18 @@ var webCmd = &cobra.Command{
 Remeber that you can change configuration for the pdf maker if you want
 another font style or name of the file etc.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("web called")
+		hrefParser := content_parser.NewParser()
+
+		for _, arg := range args {
+			hrefData, err := http.Get(arg)
+			if err != nil {
+				log.Printf("Cannot open %v, error GET: %v\n", arg, hrefData)
+				continue
+			}
+			hrefParser.ParseContent(hrefData.Body)
+		}
+
+		log.Println("OK")
 	},
 }
 

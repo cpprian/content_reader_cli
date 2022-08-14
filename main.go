@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "content_reader/cmd"
+import "github.com/cpprian/content_reader_cli/cmd"
 
 func main() {
 	cmd.Execute()
