@@ -30,13 +30,11 @@ import (
 // webCmd represents the web command
 var webCmd = &cobra.Command{
 	Use:   "web",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Create a pdf file from your web pages.",
+	Long: `This command will create a pdf file with all links that you provide.
+	
+Remeber that you can change configuration for the pdf maker if you want
+another font style or name of the file etc.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("web called")
 	},
@@ -44,14 +42,4 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(webCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// webCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// webCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
