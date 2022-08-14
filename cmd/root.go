@@ -31,13 +31,12 @@ import (
 var (
 	rootCmd = &cobra.Command{
 		Use:   "content_reader",
-		Short: "A brief description of your application",
-		Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+		Short: "Create a pdf file with the content of your interesting pages!",
+		Long: `Content Reader CLI helps you save for a later content of a page 
+to share with others or print a pdf file.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Also, this application helps you to focus on the content of the page without ads and images.
+You can save a pdf file with code formats and better formatting (like headers or bolds and italics text).`,
 	}
 )
 

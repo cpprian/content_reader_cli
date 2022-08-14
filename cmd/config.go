@@ -46,13 +46,11 @@ var (
 
 	configCmd = &cobra.Command{
 		Use:   "config",
-		Short: "A brief description of your command",
-		Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+		Short: "Settings for the pdf file maker.",
+		Long: `You can configure a basic design of your pdf files.
+		
+Once you have changed configuration,
+the next usage of application will be with the same settings until you change again`,
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("config called")
 		},
