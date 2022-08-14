@@ -1,7 +1,6 @@
 package content_parser
 
 import (
-	"fmt"
 	"io"
 	"strings"
 
@@ -52,7 +51,7 @@ func (c *ContentContainer) ParseContent(r io.Reader) error {
 		if n.Data == "nav" || n.Data == "footer" {
 			return
 		}
-	
+
 		if n.FirstChild != nil {
 			parse(n.FirstChild)
 		}
@@ -62,11 +61,6 @@ func (c *ContentContainer) ParseContent(r io.Reader) error {
 		}
 	}
 	parse(content)
-
-	for i, a := range *c {
-		fmt.Println("#", i, " ", a.Box)
-	}
-	fmt.Println("total ", len(*c))
 
 	return nil
 }

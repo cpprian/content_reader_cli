@@ -26,6 +26,7 @@ import (
 	"net/http"
 
 	"github.com/cpprian/content_reader_cli/pkg/content_parser"
+	"github.com/jung-kurt/gofpdf"
 	"github.com/spf13/cobra"
 )
 
@@ -50,6 +51,22 @@ another font style or name of the file etc.`,
 		}
 
 		log.Println("OK")
+		pdf := gofpdf.New("P", "mm", "A4", "")
+		pdf.AddPage()
+		pdf.SetFont("Arial", "", 16)
+		for _, i := range *hrefParser {
+			for _, j := range i.Box {
+				if len(j.Text) > 20 {
+					pdf.Cellf(40, 100, "%v", j.Text)
+				}
+			}
+			pdf.Ln(12)
+		}
+		
+		err := pdf.OutputFileAndClose("hello.pdf")
+		if err != nil {
+			log.Println(err)
+		}
 	},
 }
 
