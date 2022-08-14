@@ -1,0 +1,7 @@
+font:
+    size: 16
+    style: Sans serif
+name: document
+open: false
+path: ./store
+pretty: false

@@ -23,43 +23,78 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-// configCmd represents the config command
-var configCmd = &cobra.Command{
-	Use:   "config",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
+type ConfigStruct struct {
+	Name   string
+	Path   string
+	Open   bool
+	Pretty bool
+
+	Font struct {
+		Size  int
+		Style string
+	}
+}
+
+var (
+	userConfig *ConfigStruct
+
+	configCmd = &cobra.Command{
+		Use:   "config",
+		Short: "A brief description of your command",
+		Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("config called")
-	},
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("config called")
+		},
+	}
+)
+
+var (
+	configFileName = "content_reader"
+	configPath     = "./config"
+)
+
+// initConfig reads in config file and ENV variables if set.
+func initConfig() {
+	viper.AddConfigPath(configPath)
+	viper.SetConfigType("yaml")
+	viper.SetConfigName(configFileName)
+
+	viper.SetDefault("name", userConfig.Name)
+	viper.SetDefault("path", userConfig.Path)
+	viper.SetDefault("font.size", userConfig.Font.Size)
+	viper.SetDefault("font.style", userConfig.Font.Style)
+	viper.SetDefault("open", userConfig.Open)
+	viper.SetDefault("pretty", userConfig.Pretty)
+	viper.WriteConfig()
+	viper.AutomaticEnv()
+
+	// If a config file is found, read it in.
+	if err := viper.ReadInConfig(); err != nil {
+		log.Println(err)
+	}
 }
 
 func init() {
 	rootCmd.AddCommand(configCmd)
 
-	// Here you will define your flags and configuration settings.
+	userConfig = &ConfigStruct{}
+	configCmd.Flags().StringVarP(&userConfig.Name, "name", "n", "document", "A name of your new pdf file (by default 'document_{number_of_document_files + 1}')")
+	configCmd.Flags().StringVarP(&userConfig.Font.Style, "style", "t", "Sans serif", "A font style, that your pdf will be writing (by default Sans serif)")
+	configCmd.Flags().IntVarP(&userConfig.Font.Size, "size", "z", 16, "A font size, that your pdf will be writing (by default 16)")
+	configCmd.Flags().BoolVarP(&userConfig.Open, "open", "o", false, "Is your new pdf file should open after creating it (by default false)")
+	configCmd.Flags().BoolVarP(&userConfig.Pretty, "pretty", "r", false, "Is your pdf file should embelished html tags and code formats (by default false)")
+	configCmd.Flags().StringVarP(&userConfig.Path, "path", "p", "./store", "A path where you want save your new pdf file (be default '{path_to_content_reader_app}/content_reader_cli/store')")
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	configCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	configCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
-
-	// name
-	// sfont
-	// sfontsize
-	// sopen
-	// spath
-	// spretty
+	cobra.OnInitialize(initConfig)
 }
