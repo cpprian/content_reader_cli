@@ -52,7 +52,7 @@ func (c *ContentContainer) ParseContent(r io.Reader) error {
 		if n.Data == "nav" || n.Data == "footer" {
 			return
 		}
-
+	
 		if n.FirstChild != nil {
 			parse(n.FirstChild)
 		}
