@@ -52,6 +52,7 @@ var (
 Once you have changed configuration,
 the next usage of application will be with the same settings until you change again`,
 		Run: func(cmd *cobra.Command, args []string) {
+			// TODO: inform user that process ends with positive or negative result
 			fmt.Println("config called")
 		},
 	}
