@@ -3,6 +3,7 @@ package content_parser
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -44,9 +45,12 @@ func (c *ContentContainer) ParseContent(r io.Reader) error {
 	var parse func(n *html.Node)
 	parse = func(n *html.Node) {
 		if n.Type == html.ElementNode && tagChecker(n.Data) && n.Data != "a" {
-			if newBox = getContent(n, n.Data); newBox != nil {
+			if newBox = getContent(n, n.Data); len(newBox.Box) > 0 {
 				*c = append(*c, newBox)
 			}
+		}
+		if n.Data == "nav" || n.Data == "footer" {
+			return
 		}
 
 		if n.FirstChild != nil {
@@ -74,20 +78,20 @@ func getContent(n *html.Node, tag string) *BoxText {
 		if c.Type == html.ElementNode {
 			if c.FirstChild != nil {
 				if !tagChecker(c.Data) {
-					continue
+					break
 				}
 				tag = c.Data
 				newBoxContainer = mergeContent(newBoxContainer, getContent(c, tag))
 			}
 		} else if c.Type == html.TextNode {
-			if c.Data == "" {
+			if strings.TrimSpace(c.Data) == "" {
 				continue
 			}
 			newBoxContainer.Box = append(
 				newBoxContainer.Box,
 				TextStruct{
-					Tag: tag,
-					Text: c.Data,
+					Tag:  tag,
+					Text: strings.TrimSuffix(c.Data, "\r\t\n"),
 				},
 			)
 		}
