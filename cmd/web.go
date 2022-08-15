@@ -46,7 +46,7 @@ another font style or name of the file etc.`,
 				log.Printf("Cannot open %v, error GET: %v\n", arg, hrefData)
 				continue
 			}
-			hrefParser.ParseContent(hrefData.Body)
+			hrefParser.CreateBoxText(hrefData.Body)
 		}
 
 		log.Println("OK")
