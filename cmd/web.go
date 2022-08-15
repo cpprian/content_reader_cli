@@ -24,6 +24,7 @@ package cmd
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/cpprian/content_reader_cli/pkg/content_parser"
 	"github.com/jung-kurt/gofpdf"
@@ -52,18 +53,18 @@ another font style or name of the file etc.`,
 
 		log.Println("OK")
 		pdf := gofpdf.New("P", "mm", "A4", "")
-		pdf.AddPage()
 		pdf.SetFont("Arial", "", 16)
 		for _, i := range *hrefParser {
+			var stringer strings.Builder
 			for _, j := range i.Box {
-				if len(j.Text) > 20 {
-					pdf.Cellf(40, 100, "%v", j.Text)
-				}
+				stringer.WriteString(j.Text)
 			}
-			pdf.Ln(12)
+			pdf.SetMargins(10, 10, 10)
+			pdf.SetAutoPageBreak(true, 10)
+			pdf.CellFormat(10, 10, stringer.String(), "", 0, "", false, 0, "")
 		}
-		
-		err := pdf.OutputFileAndClose("hello.pdf")
+
+		err := pdf.OutputFileAndClose("./store/hello.pdf")
 		if err != nil {
 			log.Println(err)
 		}

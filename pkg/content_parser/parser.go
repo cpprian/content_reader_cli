@@ -43,7 +43,7 @@ func (c *ContentContainer) ParseContent(r io.Reader) error {
 	var newBox *BoxText
 	var parse func(n *html.Node)
 	parse = func(n *html.Node) {
-		if n.Type == html.ElementNode && tagChecker(n.Data) && n.Data != "a" {
+		if n.Type == html.ElementNode && n.Data == "p" {
 			if newBox = getContent(n, n.Data); len(newBox.Box) > 0 {
 				*c = append(*c, newBox)
 			}
