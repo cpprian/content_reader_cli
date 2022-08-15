@@ -1,7 +1,6 @@
 package testing
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -16,28 +15,34 @@ func TestParser(t *testing.T) {
 		f, _ := os.Open("./tested_files/test_1.html")
 
 		got.ParseContent(f)
-		CompareContainer(t, got, want_test_1)
+		CompareBoxText(t, got, &want_test_1)
 	})
 }
 
-func CompareContainer(t testing.TB, got, want *con.ContentContainer) {
+func CompareBoxText(t *testing.T, got *con.BoxText, want *con.BoxText) {
+
 	if len(*got) != len(*want) {
-		t.Errorf("got %d, want %d", len(*got), len(*want))
-		return
+		t.Errorf("got %d want %d", len(*got), len(*want))
 	}
+
 	for i := range *got {
-		if len((*got)[i].Box) != len((*want)[i].Box) {
-			t.Errorf("got %d, want %d", len((*got)[i].Box), len((*want)[i].Box))
-			return
-		}
-		for j := range (*got)[i].Box {
-			if (*got)[i].Box[j].Tag != (*want)[i].Box[j].Tag {
-				t.Errorf("got %s, want %s", (*got)[i].Box[j].Tag, (*want)[i].Box[j].Tag)
-			}
-			if (*got)[i].Box[j].Text != (*want)[i].Box[j].Text {
-				fmt.Println(len((*got)[i].Box[j].Text), len((*want)[i].Box[j].Text))
-				t.Errorf("got %s, want %s", (*got)[i].Box[j].Text, (*want)[i].Box[j].Text)
-			}
-		}
+		CompareTextStruct(t, &(*got)[i], &(*want)[i])
+	}
+}
+
+func CompareTextStruct(t *testing.T, got *con.TextStruct, want *con.TextStruct) {
+
+	if got.Tag != want.Tag {
+		t.Errorf("got %s want %s", got.Tag, want.Tag)
+	}
+	if got.Text != want.Text {
+		t.Errorf("got %s want %s", got.Text, want.Text)
+	}
+	if len(got.Children) != len(want.Children) {
+		t.Errorf("got %d want %d", len(got.Children), len(want.Children))
+	}
+
+	for i := range got.Children {
+		CompareTextStruct(t, &got.Children[i], &want.Children[i])
 	}
 }

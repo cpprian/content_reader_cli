@@ -5,70 +5,38 @@ import (
 )
 
 var (
-	want_test_1 = &con.ContentContainer{
-		&con.BoxText{
-			Box: []con.TextStruct{
+	want_test_1 = con.BoxText{
+		{
+			Tag:  "div",
+			Text: "",
+			Children: []con.TextStruct{
 				{
-					Tag:  "h1",
-					Text: "Hello world",
+					Tag:      "h1",
+					Text:     "Hello world",
+					Children: nil,
 				},
 				{
-					Tag:  "p",
-					Text: "a brand new text, to learn some new things",
-				},
-				{
-					Tag:  "div",
-					Text: "ok, why not try to learn some new things",
-				},
-				{
-					Tag:  "a",
-					Text: "I know some things!",
-				},
-				{
-					Tag:  "div",
-					Text: "hello world",
-				},
-				{
-					Tag:  "i",
-					Text: "this is an amazing",
-				},
-				{
-					Tag:  "div",
-					Text: " text ",
-				},
-				{
-					Tag:  "b",
-					Text: "to learn",
-				},
-				{
-					Tag:  "div",
-					Text: " some new things",
-				},
-				{
-					Tag:  "div",
-					Text: "ok, that was strange",
+					Tag:      "p",
+					Text:     "a brand new text, to learn some new things",
+					Children: nil,
 				},
 			},
 		},
-		&con.BoxText{
-			Box: []con.TextStruct{
+		{
+			Tag:  "div",
+			Text: "",
+			Children: []con.TextStruct{
 				{
-					Tag:  "div",
-					Text: "some div",
-				},
-				{
-					Tag:  "p",
-					Text: "hello world new dir",
+					Tag:      "p",
+					Text:     "hello world new dir",
+					Children: nil,
 				},
 			},
 		},
-		&con.BoxText{
-			Box: []con.TextStruct{
-				{
-					Tag:  "p",
-					Text: "Sick content",
-				},
-			},
+		{
+			Tag:  "p",
+			Text: "Sick content",
+			Children: nil,
 		},
 	}
 )
