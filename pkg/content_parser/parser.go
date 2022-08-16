@@ -3,6 +3,7 @@ package content_parser
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -16,6 +17,14 @@ type BoxText []TextStruct
 
 func NewParser() *BoxText {
 	return &BoxText{}
+}
+
+func tagChecker(tag string) bool {
+	switch tag {
+	case "div", "p", "h1", "a":
+		return true;
+	}
+	return false
 }
 
 func (b *BoxText) CreateBoxText(r io.Reader) error {
@@ -32,8 +41,10 @@ func (b *BoxText) CreateBoxText(r io.Reader) error {
 func (b *BoxText) Parse(n *html.Node) {
 
 	f := func(n *html.Node) {
-		fmt.Println("#", n.Data)
-		*b = append(*b, ParseNode(n))
+		data := ParseNode(n)
+		if data != nil {
+			*b = append(*b, *data)
+		}
 
 		if n.FirstChild != nil {
 			b.Parse(n.FirstChild)
@@ -46,13 +57,24 @@ func (b *BoxText) Parse(n *html.Node) {
 	f(n)
 }
 
-func ParseNode(n *html.Node) TextStruct {
-	if n.Type == html.ElementNode {
-		fmt.Println("Tag: ", n.Data)
-	} else if n.Type == html.TextNode {
-		fmt.Println("Text: ", n.Data)
+func ParseNode(n *html.Node) *TextStruct {
+	if n.Type == html.ElementNode && tagChecker(n.Data) {
+		if n.FirstChild != nil {
+			return ParseTextStruct(n.FirstChild, n.Data)
+		}
 	}
-	return TextStruct{}
+	return nil
+}
+
+func ParseTextStruct(n *html.Node, tag string) *TextStruct {
+	if n.Type == html.TextNode {
+		data := strings.TrimSpace(n.Data)
+		if len(data) < 1 {
+			return nil
+		}
+		return &TextStruct{Tag: tag, Text: n.Data}
+	}
+	return nil
 }
 
 func (b *BoxText) String() string {
