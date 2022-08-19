@@ -22,7 +22,7 @@ func NewParser() *BoxText {
 func tagChecker(tag string) bool {
 	switch tag {
 	case "div", "p", "h1", "a":
-		return true;
+		return true
 	}
 	return false
 }
@@ -39,42 +39,61 @@ func (b *BoxText) CreateBoxText(r io.Reader) error {
 }
 
 func (b *BoxText) Parse(n *html.Node) {
+	node, err := getBody(n)
+	if err != nil {
+		return
+	}
 
-	f := func(n *html.Node) {
-		data := ParseNode(n)
-		if data != nil {
-			*b = append(*b, *data)
+	var saveContent func(n *html.Node)
+	saveContent = func(n *html.Node) {
+		if n.Type == html.ElementNode && tagChecker(n.Data) {
+			*b = append(*b, *ParseNode(n))
 		}
 
-		if n.FirstChild != nil {
-			b.Parse(n.FirstChild)
-		}
-
-		if n.NextSibling != nil {
-			b.Parse(n.NextSibling)
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			saveContent(c)
 		}
 	}
-	f(n)
+	saveContent(node)
+}
+
+func getBody(n *html.Node) (*html.Node, error) {
+	var body *html.Node
+
+	var searchForBody func(n *html.Node)
+	searchForBody = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "body" {
+			body = n
+			return
+		}
+
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			searchForBody(c)
+		}
+	}
+	searchForBody(n)
+
+	if body != nil {
+		return body, nil
+	}
+	return nil, fmt.Errorf("cannot find body")
 }
 
 func ParseNode(n *html.Node) *TextStruct {
-	if n.Type == html.ElementNode && tagChecker(n.Data) {
-		if n.FirstChild != nil {
-			return ParseTextStruct(n.FirstChild, n.Data)
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		if c.Type == html.TextNode {
+			if len(strings.TrimSpace(c.Data)) > 1 {
+				fmt.Println(strings.TrimSpace(c.Data))
+			}	
 		}
 	}
-	return nil
+
+	return &TextStruct{}
 }
 
 func ParseTextStruct(n *html.Node, tag string) *TextStruct {
-	if n.Type == html.TextNode {
-		data := strings.TrimSpace(n.Data)
-		if len(data) < 1 {
-			return nil
-		}
-		return &TextStruct{Tag: tag, Text: n.Data}
-	}
-	return nil
+
+	return &TextStruct{}
 }
 
 func (b *BoxText) String() string {
