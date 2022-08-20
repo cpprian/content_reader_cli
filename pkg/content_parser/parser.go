@@ -20,7 +20,9 @@ func NewParser() *BoxText {
 
 func tagChecker(tag string) bool {
 	switch tag {
-	case "div", "p", "h1", "a":
+	case "div", "p", "h1", "h2", "h3", "h4", "h5", "h6", "a", "code", 
+		"span", "pre", "big", "i", "strong", "b", "section", "header", 
+		"article", "ul", "li", "ol":
 		return true
 	}
 	return false
