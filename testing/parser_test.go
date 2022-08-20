@@ -17,6 +17,15 @@ func TestParser(t *testing.T) {
 		got.CreateBoxText(f)
 		CompareBoxText(t, got, &want_test_1)
 	})
+
+	t.Run("page with nested tags", func(t *testing.T) {
+		got := con.NewParser()
+
+		f, _ := os.Open("./tested_files/test_2.html")
+
+		got.CreateBoxText(f)
+		CompareBoxText(t, got, &want_test_2)
+	})
 }
 
 func CompareBoxText(t *testing.T, got *con.BoxText, want *con.BoxText) {
