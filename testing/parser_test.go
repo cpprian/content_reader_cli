@@ -1,7 +1,6 @@
 package testing
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -16,7 +15,6 @@ func TestParser(t *testing.T) {
 		f, _ := os.Open("./tested_files/test_1.html")
 
 		got.CreateBoxText(f)
-		fmt.Println(got)
 		CompareBoxText(t, got, &want_test_1)
 	})
 }
@@ -39,12 +37,5 @@ func CompareTextStruct(t *testing.T, got *con.TextStruct, want *con.TextStruct) 
 	}
 	if got.Text != want.Text {
 		t.Fatalf("got %s want %s", got.Text, want.Text)
-	}
-	if len(got.Children) != len(want.Children) {
-		t.Fatalf("got %d want %d", len(got.Children), len(want.Children))
-	}
-
-	for i := range got.Children {
-		CompareTextStruct(t, &got.Children[i], &want.Children[i])
 	}
 }

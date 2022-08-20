@@ -7,36 +7,24 @@ import (
 var (
 	want_test_1 = con.BoxText{
 		{
-			Tag:  "div",
-			Text: "",
-			Children: []con.TextStruct{
-				{
-					Tag:      "h1",
-					Text:     "Hello world",
-					Children: nil,
-				},
-				{
-					Tag:      "p",
-					Text:     "a brand new text, to learn some new things",
-					Children: nil,
-				},
-			},
+			Tag:  "h1",
+			Text: "Hello world",
 		},
 		{
-			Tag:  "div",
-			Text: "",
-			Children: []con.TextStruct{
-				{
-					Tag:      "p",
-					Text:     "hello world new dir",
-					Children: nil,
-				},
-			},
+			Tag:  "p",
+			Text: "a brand new text, to learn some new things",
+		},
+		{
+			Tag:  "p",
+			Text: "hello world new dir",
 		},
 		{
 			Tag:  "p",
 			Text: "Sick content",
-			Children: nil,
+		},
+		{
+			Tag:  "a",
+			Text: "it should also appears",
 		},
 	}
 )

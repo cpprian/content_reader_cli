@@ -10,7 +10,6 @@ import (
 
 type TextStruct struct {
 	Tag, Text string
-	Children  []TextStruct
 }
 
 type BoxText []TextStruct
@@ -47,7 +46,10 @@ func (b *BoxText) Parse(n *html.Node) {
 	var saveContent func(n *html.Node)
 	saveContent = func(n *html.Node) {
 		if n.Type == html.ElementNode && tagChecker(n.Data) {
-			*b = append(*b, *ParseNode(n))
+			newNode := ParseNode(n, n.Data)
+			if newNode != nil {
+				*b = append(*b, *newNode)
+			}	
 		}
 
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
@@ -79,21 +81,19 @@ func getBody(n *html.Node) (*html.Node, error) {
 	return nil, fmt.Errorf("cannot find body")
 }
 
-func ParseNode(n *html.Node) *TextStruct {
+func ParseNode(n *html.Node, tag string) *TextStruct {
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		if c.Type == html.TextNode {
-			if len(strings.TrimSpace(c.Data)) > 1 {
-				fmt.Println(strings.TrimSpace(c.Data))
+			text := strings.TrimSpace(c.Data)
+			if len(text) > 1 {
+				return &TextStruct{
+					Tag: tag,
+					Text: text,
+				}
 			}	
 		}
 	}
-
-	return &TextStruct{}
-}
-
-func ParseTextStruct(n *html.Node, tag string) *TextStruct {
-
-	return &TextStruct{}
+	return nil
 }
 
 func (b *BoxText) String() string {
