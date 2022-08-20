@@ -39,6 +39,7 @@ Remeber that you can change configuration for the pdf maker if you want
 another font style or name of the file etc.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		hrefParser := content_parser.NewParser()
+		hrefArray := &[]content_parser.BoxText{}
 
 		for _, arg := range args {
 			hrefData, err := http.Get(arg)
@@ -46,9 +47,16 @@ another font style or name of the file etc.`,
 				log.Printf("Cannot open %v, error GET: %v\n", arg, hrefData)
 				continue
 			}
-			hrefParser.CreateBoxText(hrefData.Body)
+			if err := hrefParser.CreateBoxText(hrefData.Body); err != nil {
+				log.Fatalln(err)
+				continue
+			}
+			*hrefArray = append(*hrefArray, *hrefParser)
 		}
 
+		for _, href := range *hrefArray {
+			href.Print()
+		}
 		log.Println("OK")
 	},
 }

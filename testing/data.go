@@ -39,19 +39,19 @@ var (
 		},
 		{
 			Tag:  "p",
-			Text: "a brand new text, to learn some new things",
+			Text: "a brand new text,",
 		},
 		{
 			Tag:  "h6",
 			Text: "to learn",
 		},
 		{
-			Tag:  "p",
+			Tag:  "p", // TODO: fix this
 			Text: "some new things",
 		},
 		{
 			Tag:  "div",
-			Text: "some new nested content",
+			Text: "some new nested content V",
 		},
 		{
 			Tag:  "div",
@@ -71,11 +71,15 @@ var (
 		},
 		{
 			Tag:  "i",
-			Text: "the",
+			Text: "the V",
 		},
 		{
 			Tag: "p",
-			Text: "content",
+			Text: "content V",
+		},
+		{
+			Tag:  "div",
+			Text: "a new adventure V",
 		},
 		{
 			Tag:  "p",
@@ -91,7 +95,23 @@ var (
 		},
 		{
 			Tag: "section",
-			Text: "goodbye",
+			Text: "goodbye V",
+		},
+		{
+			Tag:  "li",
+			Text: "one",
+		},
+		{
+			Tag:  "li",
+			Text: "two",
+		},
+		{
+			Tag:  "code",
+			Text: "three",
+		},
+		{
+			Tag:  "li",
+			Text: "four",
 		},
 	}
 )

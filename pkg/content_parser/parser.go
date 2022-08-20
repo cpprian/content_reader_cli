@@ -20,8 +20,8 @@ func NewParser() *BoxText {
 
 func tagChecker(tag string) bool {
 	switch tag {
-	case "div", "p", "h1", "h2", "h3", "h4", "h5", "h6", "a", "code", 
-		"span", "pre", "big", "i", "strong", "b", "section", "header", 
+	case "div", "p", "h1", "h2", "h3", "h4", "h5", "h6", "a", "code",
+		"pre", "big", "i", "strong", "b", "section", "header",
 		"article", "ul", "li", "ol":
 		return true
 	}
@@ -51,7 +51,21 @@ func (b *BoxText) Parse(n *html.Node) {
 			newNode := ParseNode(n, n.Data)
 			if newNode != nil {
 				*b = append(*b, *newNode)
-			}	
+			}
+		}
+
+		// TODO: find a better way to parse nested tags
+		if n.Type == html.TextNode {
+			text := strings.TrimSpace(n.Data)
+			if len(text) > 1 && b.SearchForOccurence(text) {
+				if tagChecker(n.Parent.Data) {
+					*b = append(*b, TextStruct{
+						// TODO: better way to get tag name
+						Tag:  n.Parent.Data,
+						Text: text,
+					})
+				}
+			}
 		}
 
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
@@ -84,20 +98,33 @@ func getBody(n *html.Node) (*html.Node, error) {
 }
 
 func ParseNode(n *html.Node, tag string) *TextStruct {
-	for c := n.FirstChild; c != nil; c = c.NextSibling {
+	if c := n.FirstChild; c != nil {
 		if c.Type == html.TextNode {
 			text := strings.TrimSpace(c.Data)
+			
 			if len(text) > 1 {
 				return &TextStruct{
-					Tag: tag,
+					Tag:  tag,
 					Text: text,
 				}
-			}	
+			}
 		}
 	}
+	
 	return nil
 }
 
-func (b *BoxText) String() string {
-	return fmt.Sprintf("%v", *b)
+func (b *BoxText) SearchForOccurence(text string) bool {
+	for _, v := range *b {
+		if v.Text == text {
+			return false
+		}
+	}
+	return true
+}
+
+func (b *BoxText) Print() {
+	for i, v := range *b {
+		fmt.Printf("#%d %s: %s\n", i, v.Tag, v.Text)
+	}
 }

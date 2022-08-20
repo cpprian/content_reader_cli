@@ -24,6 +24,7 @@ func TestParser(t *testing.T) {
 		f, _ := os.Open("./tested_files/test_2.html")
 
 		got.CreateBoxText(f)
+		got.Print()
 		CompareBoxText(t, got, &want_test_2)
 	})
 }
