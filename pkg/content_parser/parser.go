@@ -8,109 +8,123 @@ import (
 	"golang.org/x/net/html"
 )
 
-type BoxText struct {
-	Box []TextStruct
-}
-
 type TextStruct struct {
 	Tag, Text string
 }
 
-type ContentContainer []*BoxText
+type BoxText []TextStruct
 
-type Parser interface {
-	ParseContent(r io.Reader) error
-}
-
-func NewParser() *ContentContainer {
-	return &ContentContainer{}
+func NewParser() *BoxText {
+	return &BoxText{}
 }
 
 func tagChecker(tag string) bool {
 	switch tag {
-	case "p", "a", "div", "ul", "ol", "li", "code", "h1", "h2", "h3", "h4",
-		"h5", "h6", "b", "i", "strong", "span", "section", "header", "label":
+	case "div", "p", "h1", "h2", "h3", "h4", "h5", "h6", "a", "code",
+		"pre", "big", "i", "strong", "b", "section", "header",
+		"article", "ul", "li", "ol":
 		return true
 	}
 	return false
 }
 
-func (c *ContentContainer) ParseContent(r io.Reader) error {
-	content, err := html.Parse(r)
+func (b *BoxText) CreateBoxText(r io.Reader) error {
+	doc, err := html.Parse(r)
 	if err != nil {
 		return err
 	}
 
-	var newBox *BoxText
-	var parse func(n *html.Node)
-	parse = func(n *html.Node) {
-		if n.Type == html.ElementNode && tagChecker(n.Data) && n.Data != "a" {
-			if newBox = getContent(n, n.Data); len(newBox.Box) > 0 {
-				*c = append(*c, newBox)
-			}
-		}
-		if n.Data == "nav" || n.Data == "footer" {
-			return
-		}
-	
-		if n.FirstChild != nil {
-			parse(n.FirstChild)
-		}
-
-		if n.NextSibling != nil {
-			parse(n.NextSibling)
-		}
-	}
-	parse(content)
-
-	for i, a := range *c {
-		fmt.Println("#", i, " ", a.Box)
-	}
-	fmt.Println("total ", len(*c))
+	b.Parse(doc)
 
 	return nil
 }
 
-func getContent(n *html.Node, tag string) *BoxText {
-	newBoxContainer := &BoxText{}
+func (b *BoxText) Parse(n *html.Node) {
+	node, err := getBody(n)
+	if err != nil {
+		return
+	}
 
-	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		if c.Type == html.ElementNode {
-			if c.FirstChild != nil {
-				if !tagChecker(c.Data) {
-					break
+	var saveContent func(n *html.Node)
+	saveContent = func(n *html.Node) {
+		if n.Type == html.ElementNode && tagChecker(n.Data) {
+			newNode := ParseNode(n, n.Data)
+			if newNode != nil {
+				*b = append(*b, *newNode)
+			}
+		}
+
+		// TODO: find a better way to parse nested tags
+		if n.Type == html.TextNode {
+			text := strings.TrimSpace(n.Data)
+			if len(text) > 1 && b.SearchForOccurence(text) {
+				if tagChecker(n.Parent.Data) {
+					*b = append(*b, TextStruct{
+						// TODO: better way to get tag name
+						Tag:  n.Parent.Data,
+						Text: text,
+					})
 				}
-				tag = c.Data
-				newBoxContainer = mergeContent(newBoxContainer, getContent(c, tag))
 			}
-		} else if c.Type == html.TextNode {
-			if strings.TrimSpace(c.Data) == "" {
-				continue
-			}
-			newBoxContainer.Box = append(
-				newBoxContainer.Box,
-				TextStruct{
-					Tag:  tag,
-					Text: strings.TrimSuffix(c.Data, "\r\t\n"),
-				},
-			)
+		}
+
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			saveContent(c)
 		}
 	}
-
-	return newBoxContainer
+	saveContent(node)
 }
 
-func mergeContent(first, second *BoxText) *BoxText {
-	if first == nil || second == nil {
-		return nil
-	}
+func getBody(n *html.Node) (*html.Node, error) {
+	var body *html.Node
 
-	for _, b := range second.Box {
-		first.Box = append(first.Box, TextStruct{
-			b.Tag,
-			b.Text,
-		})
-	}
+	var searchForBody func(n *html.Node)
+	searchForBody = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "body" {
+			body = n
+			return
+		}
 
-	return first
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			searchForBody(c)
+		}
+	}
+	searchForBody(n)
+
+	if body != nil {
+		return body, nil
+	}
+	return nil, fmt.Errorf("cannot find body")
+}
+
+func ParseNode(n *html.Node, tag string) *TextStruct {
+	if c := n.FirstChild; c != nil {
+		if c.Type == html.TextNode {
+			text := strings.TrimSpace(c.Data)
+			
+			if len(text) > 1 {
+				return &TextStruct{
+					Tag:  tag,
+					Text: text,
+				}
+			}
+		}
+	}
+	
+	return nil
+}
+
+func (b *BoxText) SearchForOccurence(text string) bool {
+	for _, v := range *b {
+		if v.Text == text {
+			return false
+		}
+	}
+	return true
+}
+
+func (b *BoxText) Print() {
+	for i, v := range *b {
+		fmt.Printf("#%d %s: %s\n", i, v.Tag, v.Text)
+	}
 }
