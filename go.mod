@@ -17,6 +17,7 @@ require (
 	github.com/phpdave11/gofpdi v1.0.13 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/ruudk/golang-pdf417 v0.0.0-20201230142125-a7e3863a1245 // indirect
+	github.com/signintech/gopdf v0.14.2
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/cobra v1.5.0 // indirect

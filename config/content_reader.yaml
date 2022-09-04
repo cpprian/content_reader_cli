@@ -1,7 +1,6 @@
 font:
-    size: 16
-    style: Sans serif
+    size: 14
+    style: sans_serif
 name: document
 open: false
-path: ./store
 pretty: false
