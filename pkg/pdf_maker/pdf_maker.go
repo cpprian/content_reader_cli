@@ -20,7 +20,6 @@ func CreatePdf(hrefParser *content_parser.BoxText) error {
 
 	fillDataIntoPdf(m, wrapText(hrefParser))
 
-
 	return m.OutputFileAndClose("./store/" + viper.GetString("name") + ".pdf")
 }
 
