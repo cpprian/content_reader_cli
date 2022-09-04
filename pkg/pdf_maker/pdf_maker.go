@@ -20,37 +20,33 @@ func CreatePdf(hrefParser *content_parser.ContentContainer) error {
 	m.SetDefaultFontFamily(viper.GetString("font.style"))
 
 	for _, href := range *hrefParser {
-		fillDataIntoPdf(m, href)
+		fillDataIntoPdf(m, wrapText(href))
 	}
 
 	return m.OutputFileAndClose("./store/" + viper.GetString("name") + ".pdf")
 }
 
-func fillDataIntoPdf(m pdf.Maroto, box *content_parser.BoxText) {
-	data := make([]string, 0)
-	for _, b := range box.Box {
-		data = append(data, b.Text+" ")
-	}
+func fillDataIntoPdf(m pdf.Maroto, data string) {
 	size := calculateRowSize(data)
-	log.Println(len(data), size)
+	log.Println("data: " , len(data), " size: ", size)
 
-	m.Row(calculateRowSize(data), func() {
+	m.Row(size, func() {
 		m.Col(12, func() {
-			m.Text(wrapText(data), props.Text{
+			m.Text(data, props.Text{
 				Size: float64(viper.GetInt("font.size")),
 			})
 		})
 	})
 }
 
-func wrapText(text []string) string {
+func wrapText(text *content_parser.BoxText) string {
 	var result strings.Builder
-	for _, t := range text {
-		result.WriteString(t)
+	for _, t := range text.Box {
+		result.WriteString(t.Text + " ")
 	}
 	return result.String()
 }
 
-func calculateRowSize(text []string) float64 {
-	return math.Round(float64(len(text)) * 0.4) + 1
+func calculateRowSize(text string) float64 {
+	return math.Ceil(float64(len(text)) * float64(viper.GetInt("font.size")) / 150)
 }
