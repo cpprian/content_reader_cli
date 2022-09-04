@@ -26,6 +26,7 @@ import (
 	"net/http"
 
 	"github.com/cpprian/content_reader_cli/pkg/content_parser"
+	pdf "github.com/cpprian/content_reader_cli/pkg/pdf_maker"
 	"github.com/spf13/cobra"
 )
 
@@ -58,6 +59,9 @@ another font style or name of the file etc.`,
 			href.Print()
 		}
 		log.Println("OK")
+		if err := pdf.CreatePdf(hrefParser); err != nil {
+			log.Println(err)
+		}
 	},
 }
 
