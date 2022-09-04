@@ -51,7 +51,9 @@ another font style or name of the file etc.`,
 		}
 
 		log.Println("OK")
-		pdf.CreatePdf(hrefParser)
+		if err := pdf.CreatePdf(hrefParser); err != nil {
+			log.Println(err)
+		}
 	},
 }
 

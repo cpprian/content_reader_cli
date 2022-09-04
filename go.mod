@@ -5,6 +5,11 @@ go 1.19
 require golang.org/x/net v0.0.0-20220812174116-3211cb980234
 
 require (
+	github.com/google/uuid v1.3.0 // indirect
+	github.com/johnfercher/maroto v0.38.0 // indirect
+)
+
+require (
 	github.com/boombuler/barcode v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

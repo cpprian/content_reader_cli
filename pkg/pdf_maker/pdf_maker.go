@@ -2,34 +2,55 @@ package pdf_maker
 
 import (
 	"log"
+	"math"
+	"strings"
 
 	"github.com/cpprian/content_reader_cli/pkg/content_parser"
-	"github.com/signintech/gopdf"
+	_ "github.com/johnfercher/maroto/pkg/color"
+	"github.com/johnfercher/maroto/pkg/consts"
+	"github.com/johnfercher/maroto/pkg/pdf"
+	"github.com/johnfercher/maroto/pkg/props"
 	"github.com/spf13/viper"
 )
 
 func CreatePdf(hrefParser *content_parser.ContentContainer) error {
-	pdf := gopdf.GoPdf{}
-	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
-	pdf.AddPage()
-
-	err := pdf.AddTTFFont(viper.GetString("font.style"), "./config/font/"+viper.GetString("font.style")+".ttf")
-	if err != nil {
-		log.Printf("Cannot add font, error: %v\n", err)
-		return err
-	}
-	err = pdf.SetFont(viper.GetString("font.style"), "", viper.GetInt("font.size"))
-	if err != nil {
-		log.Printf("Cannot set font, error: %v\n", err)
-		return err
-	}
+	m := pdf.NewMaroto(consts.Portrait, consts.A4)
+	m.SetPageMargins(20, 10, 20)
+	m.AddUTF8Font(viper.GetString("font.style"), consts.Normal, "./config/font/"+viper.GetString("font.style")+".ttf")
+	m.SetDefaultFontFamily(viper.GetString("font.style"))
 
 	for _, href := range *hrefParser {
-		for _, data := range href.Box {
-			pdf.Cell(nil, data.Text)
-		}
-		pdf.Br(30)
+		fillDataIntoPdf(m, href)
 	}
-	
-	return pdf.WritePdf("./store/" + viper.GetString("name") + ".pdf")
+
+	return m.OutputFileAndClose("./store/" + viper.GetString("name") + ".pdf")
+}
+
+func fillDataIntoPdf(m pdf.Maroto, box *content_parser.BoxText) {
+	data := make([]string, 0)
+	for _, b := range box.Box {
+		data = append(data, b.Text+" ")
+	}
+	size := calculateRowSize(data)
+	log.Println(len(data), size)
+
+	m.Row(calculateRowSize(data), func() {
+		m.Col(12, func() {
+			m.Text(wrapText(data), props.Text{
+				Size: float64(viper.GetInt("font.size")),
+			})
+		})
+	})
+}
+
+func wrapText(text []string) string {
+	var result strings.Builder
+	for _, t := range text {
+		result.WriteString(t)
+	}
+	return result.String()
+}
+
+func calculateRowSize(text []string) float64 {
+	return math.Round(float64(len(text)) * 0.4) + 1
 }
