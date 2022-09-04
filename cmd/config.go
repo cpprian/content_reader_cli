@@ -71,7 +71,6 @@ func initConfig() {
 	viper.SetDefault("name", userConfig.Name)
 	viper.SetDefault("font.size", userConfig.Font.Size)
 	viper.SetDefault("font.style", userConfig.Font.Style)
-	viper.SetDefault("open", userConfig.Open)
 	viper.SetDefault("pretty", userConfig.Pretty)
 	viper.WriteConfig()
 	viper.AutomaticEnv()
@@ -89,7 +88,6 @@ func init() {
 	configCmd.Flags().StringVarP(&userConfig.Name, "name", "n", "document", "A name of your new pdf file (by default 'document_{number_of_document_files + 1}')")
 	configCmd.Flags().StringVarP(&userConfig.Font.Style, "style", "t", "sans_serif", "A font style, that your pdf will be writing (by default Sans serif)")
 	configCmd.Flags().IntVarP(&userConfig.Font.Size, "size", "z", 14, "A font size, that your pdf will be writing (by default 14)")
-	configCmd.Flags().BoolVarP(&userConfig.Open, "open", "o", false, "Is your new pdf file should open after creating it (by default false)")
 	configCmd.Flags().BoolVarP(&userConfig.Pretty, "pretty", "r", false, "Is your pdf file should embelished html tags and code formats (by default false)")
 	
 	cobra.OnInitialize(initConfig)

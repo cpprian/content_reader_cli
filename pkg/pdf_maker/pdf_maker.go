@@ -1,7 +1,6 @@
 package pdf_maker
 
 import (
-	"log"
 	"math"
 	"strings"
 
@@ -28,7 +27,6 @@ func CreatePdf(hrefParser *content_parser.ContentContainer) error {
 
 func fillDataIntoPdf(m pdf.Maroto, data string) {
 	size := calculateRowSize(data)
-	log.Println("data: " , len(data), " size: ", size)
 
 	m.Row(size, func() {
 		m.Col(12, func() {
